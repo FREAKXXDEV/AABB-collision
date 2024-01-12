@@ -1,26 +1,25 @@
-#include <SFML/Graphics.hpp>
+#pragma once
+#include "gameObject.h"
 
-class Player {
+class Player : public GameObject {
 public:
-	Player(sf::Vector2f position, float speed, std::vector<sf::RectangleShape> collidableObjects);
+	Player(sf::Vector2f position, sf::Vector2f size);
 	~Player();
 
+public:
 	void update(float deltaTime);
-	void draw(sf::RenderWindow &window);
-
-	sf::Vector2f getPosition() { return rect.getPosition(); };
+	sf::Vector2f getPosition() { return rect.getPosition(); }
+	void addCollisionObject(sf::RectangleShape collisionObject) { collidableObjects.push_back(collisionObject); }
 
 private:
-	void input();
+	void getInput();
 	void move(float deltaTime);
 	void collisionResponse();
 
 private:
-	sf::RectangleShape rect;
-
 	sf::Vector2f position;
 	sf::Vector2f direction;
 	float speed;
-	
+
 	std::vector<sf::RectangleShape> collidableObjects;
 };
