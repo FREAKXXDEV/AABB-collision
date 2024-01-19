@@ -8,6 +8,6 @@ public:
 	void draw(sf::RenderWindow &window);
 	Collider getCollider() { return Collider(rect); }
 
-public:
+private:
 	sf::RectangleShape rect;
 };
