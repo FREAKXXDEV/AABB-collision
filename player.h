@@ -10,7 +10,6 @@ public:
 private:
 	void getInput();
 	void move(float deltaTime);
-	void onCollision();
 
 private:
 	sf::Vector2f direction;
