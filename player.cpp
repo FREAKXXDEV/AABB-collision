@@ -1,14 +1,18 @@
 #include "player.h"
 
-Player::Player(sf::Vector2f position, sf::Vector2f size) : GameObject(position, size) {
-	this->position = position;
-	direction = sf::Vector2f(0.0f, 0.0f);
-	speed = 600.06;
-
-	this->collidableObjects = std::vector<sf::RectangleShape>{};
+Player::Player(sf::Vector2f position, sf::Vector2f size)
+	: GameObject(position, size)
+	, velocity(0.0f, 0.0f)
+	, direction(0.0f, 0.0f)
+	, collidableObjects{} {
+	
+	speed = 600.0f;
 }
 
-Player::~Player() {}
+void Player::update(float deltaTime) {
+	move(deltaTime);
+	onCollision();
+}
 
 void Player::getInput() {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) direction.x = -1.0f;
@@ -18,47 +22,42 @@ void Player::getInput() {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) direction.y = -1.0f;
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) direction.y = 1.0f;
 	else direction.y = 0.0f;
-
-	if (direction.x != 0.0f && direction.y != 0.0f) direction /= sqrt(2.0f);
 }
 
 void Player::move(float deltaTime) {
-	position.x += direction.x * speed * deltaTime;
-	position.y += direction.y * speed * deltaTime;
+	getInput();
 
-	rect.setPosition(position);
+	if (direction.x != 0.0f && direction.y != 0.0f) 
+		direction /= sqrt(2.0f);
+
+	velocity = direction * speed * deltaTime;
+	rect.move(velocity);
 }
 
-void Player::collisionResponse() {
-	for (sf::RectangleShape object : collidableObjects) {
-		sf::Vector2f thisPosition = this->rect.getPosition();
-		sf::Vector2f thisHalfSize = this->rect.getSize() / 2.0f;
+void Player::onCollision() {
+	for (auto obj : collidableObjects) {
+		sf::Vector2f thisPosition = rect.getPosition();
+		sf::Vector2f thisHalfSize = rect.getSize() / 2.0f;
 
-		sf::Vector2f otherPosition = object.getPosition();
-		sf::Vector2f otherHalfSize = object.getSize() / 2.0f;
+		sf::Vector2f objPosition = obj.rect.getPosition();
+		sf::Vector2f objHalfSize = obj.rect.getSize() / 2.0f;
 
-		float deltaX = otherPosition.x - thisPosition.x;
-		float deltaY = otherPosition.y - thisPosition.y;
+		float deltaX = objPosition.x - thisPosition.x;
+		float deltaY = objPosition.y - thisPosition.y;
 
-		float overlapX = abs(deltaX) - (thisHalfSize.x + otherHalfSize.x);
-		float overlapY = abs(deltaY) - (thisHalfSize.x + otherHalfSize.y);
+		float overlapX = abs(deltaX) - (thisHalfSize.x + objHalfSize.x);
+		float overlapY = abs(deltaY) - (thisHalfSize.y + objHalfSize.y);
 
 		if (overlapX < 0.0f && overlapY < 0.0f) {
 			if (overlapX > overlapY) {
-				if (deltaX < 0.0f) position.x -= overlapX;
-				else position.x += overlapX;
+				if (deltaX < 0.0f) rect.move(-overlapX, 0.0f);
+				else rect.move(overlapX, 0.0f);
 				return;
 			}
 
-			if (deltaY < 0.0f) position.y -= overlapY;
-			else position.y += overlapY;
+			if (deltaY < 0.0f) rect.move(0.0f, -overlapY);
+			else rect.move(0.0f, overlapY);
 			return;
 		}
 	}
-}
-
-void Player::update(float deltaTime) {
-	getInput();
-	move(deltaTime);
-	collisionResponse();
 }
