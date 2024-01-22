@@ -3,12 +3,11 @@
 Player::Player(sf::Vector2f position, sf::Vector2f size)
 	: rect(size)
 	, velocity(0.0f, 0.0f)
-	, direction(0.0f, 0.0f) {
+	, direction(0.0f, 0.0f)
+	, speed{ 600.0f }{
 
 	rect.setOrigin(size / 2.0f);
 	rect.setPosition(position);
-
-	speed = 600.0f;
 }
 
 void Player::draw(sf::RenderWindow &window) {
