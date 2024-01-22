@@ -19,5 +19,5 @@ private:
 
 	sf::Vector2f direction;
 	sf::Vector2f velocity;
-	float speed;
+	const float speed;
 };
